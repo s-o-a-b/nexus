@@ -381,7 +381,7 @@ function icetray.CreateWindow(libName, logoId, nameOfPlayer)
 	local textSize = usename.TextSize
 	runservice.Stepped:connect(function()
 		if global and global.ui_status and global.ui_status.hideusername then
-			usename.Text = "Name Hidden"
+			usename.Text = "Hidden"
 			usename.TextSize = 12.00
 		elseif global and global.ui_status and not global.ui_status.hideusername then
 			usename.Text = nameOfPlayer
