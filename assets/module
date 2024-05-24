@@ -63,7 +63,15 @@ end
 
 local getupvalues = debug.getupvalues
 local getconstants = debug.getconstants
-assert(getgc and getupvalues and getconstants, "Functions: getgc/getupvalues/getconstants")
+local success, error = pcall(function()
+    assert(getgc and getupvalues and getconstants, "Functions: getgc/getupvalues/getconstants")
+end)
+
+if success then
+    print("FUCK YEA!")
+else
+    print("POOPY EXECUTOR")
+end
 
 local checks = {
     ["function"] = {
