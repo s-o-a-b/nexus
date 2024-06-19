@@ -1,0 +1,349 @@
+local module = {}
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local AllBool = false
+
+local GetPlayer = function(Name)
+    Name = Name:lower()
+    if Name == "all" or Name == "others" then
+        AllBool = true
+        return
+    elseif Name == "random" then
+        local GetPlayers = Players:GetPlayers()
+        if table.find(GetPlayers,Player) then table.remove(GetPlayers,table.find(GetPlayers,Player)) end
+        return GetPlayers[math.random(#GetPlayers)]
+    elseif Name ~= "random" and Name ~= "all" and Name ~= "others" then
+        for _,x in next, Players:GetPlayers() do
+            if x ~= Player then
+                if x.Name:lower():match("^"..Name) then
+                    return x;
+                elseif x.DisplayName:lower():match("^"..Name) then
+                    return x;
+                end
+            end
+        end
+    else
+        return
+    end
+end
+
+function module:Fling(TargetPlayer)
+    local Character = Player.Character
+    local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+    local RootPart = Humanoid and Humanoid.RootPart
+
+    local TCharacter = TargetPlayer.Character
+    local THumanoid
+    local TRootPart
+    local THead
+    local Accessory
+    local Handle
+
+    if TCharacter:FindFirstChildOfClass("Humanoid") then
+        THumanoid = TCharacter:FindFirstChildOfClass("Humanoid")
+    end
+    if THumanoid and THumanoid.RootPart then
+        TRootPart = THumanoid.RootPart
+    end
+    if TCharacter:FindFirstChild("Head") then
+        THead = TCharacter.Head
+    end
+    if TCharacter:FindFirstChildOfClass("Accessory") then
+        Accessory = TCharacter:FindFirstChildOfClass("Accessory")
+    end
+    if Accessoy and Accessory:FindFirstChild("Handle") then
+        Handle = Accessory.Handle
+    end
+
+    if Character and Humanoid and RootPart then
+        if RootPart.Velocity.Magnitude < 50 then
+            getgenv().OldPos = RootPart.CFrame
+        end
+        if THumanoid and THumanoid.Sit and not AllBool then
+            return 
+        end
+        if THead then
+            workspace.CurrentCamera.CameraSubject = THead
+        elseif not THead and Handle then
+            workspace.CurrentCamera.CameraSubject = Handle
+        elseif THumanoid and TRootPart then
+            workspace.CurrentCamera.CameraSubject = THumanoid
+        end
+        if not TCharacter:FindFirstChildWhichIsA("BasePart") then
+            return
+        end
+        
+        local FPos = function(BasePart, Pos, Ang)
+            RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
+            Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+            RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+            RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+        end
+        
+        local SFBasePart = function(BasePart)
+            local TimeToWait = 2
+            local Time = tick()
+            local Angle = 0
+
+            repeat
+                if RootPart and THumanoid then
+                    if BasePart.Velocity.Magnitude < 50 then
+                        Angle = Angle + 100
+
+                        FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle),0 ,0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(2.25, 1.5, -2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(-2.25, -1.5, 2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                        task.wait()
+                    else
+                        FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5, -THumanoid.WalkSpeed), CFrame.Angles(0, 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+                        
+                        FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5, -TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(0, 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(math.rad(90), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5 ,0), CFrame.Angles(math.rad(-90), 0, 0))
+                        task.wait()
+
+                        FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                        task.wait()
+                    end
+                else
+                    break
+                end
+            until BasePart.Velocity.Magnitude > 500 or BasePart.Parent ~= TargetPlayer.Character or TargetPlayer.Parent ~= Players or not TargetPlayer.Character == TCharacter or THumanoid.Sit or Humanoid.Health <= 0 or tick() > Time + TimeToWait
+        end
+        
+        workspace.FallenPartsDestroyHeight = 0/0
+        
+        local BV = Instance.new("BodyVelocity")
+        BV.Name = "nexus"
+        BV.Parent = RootPart
+        BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
+        BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+        
+        Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+        
+        if TRootPart and THead then
+            if (TRootPart.CFrame.p - THead.CFrame.p).Magnitude > 5 then
+                SFBasePart(THead)
+            else
+                SFBasePart(TRootPart)
+            end
+        elseif TRootPart and not THead then
+            SFBasePart(TRootPart)
+        elseif not TRootPart and THead then
+            SFBasePart(THead)
+        elseif not TRootPart and not THead and Accessory and Handle then
+            SFBasePart(Handle)
+        else
+            return 
+        end
+        
+        BV:Destroy()
+        Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+        workspace.CurrentCamera.CameraSubject = Humanoid
+        
+        repeat
+            RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
+            Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+            Humanoid:ChangeState("GettingUp")
+            table.foreach(Character:GetChildren(), function(_, x)
+                if x:IsA("BasePart") then
+                    x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
+                end
+            end)
+            task.wait()
+        until (RootPart.Position - getgenv().OldPos.p).Magnitude < 25
+        workspace.FallenPartsDestroyHeight = getgenv().FPDH
+    else
+        return 
+    end
+end
+
+
+function module:emote(emoteName)
+	if emoteName then
+		local remotes = game:GetService("ReplicatedStorage").Remotes
+		if remotes and remotes.Misc and remotes.Misc.PlayEmote then
+			remotes.Misc.PlayEmote:Fire(emoteName)
+		end
+	end
+end
+
+function module:xray(enable)
+	local function setTransparency(obj)
+		obj.LocalTransparencyModifier = enable and 0.8 or 0
+	end
+	local function traverseDescendants(parent)
+		for _, child in ipairs(parent:GetChildren()) do
+			if child:IsA("BasePart") then
+				setTransparency(child)
+			end
+			if not child:IsA("Humanoid") then
+				traverseDescendants(child)
+			end
+		end
+	end
+	traverseDescendants(game.Workspace)
+end
+
+local getupvalues = debug.getupvalues
+local getconstants = debug.getconstants
+local success, error = pcall(function()
+    assert(getgc and getupvalues and getconstants, "Functions: getgc/getupvalues/getconstants")
+end)
+
+local checks = {
+    ["function"] = {
+        MatchFunctionName = function(targetFunction, expectedName)
+            return (debug.info(targetFunction, "n") or "") == expectedName
+        end,
+        MatchUpvalues = function(targetFunction, expectedUpvalues)
+            local success, upvalues = pcall(function()
+                local functionUpvalues = getupvalues(targetFunction)
+                local countMatch = 0
+                for _, expectedUpvalue in ipairs(expectedUpvalues) do
+                    if table.find(functionUpvalues, expectedUpvalue) then
+                        countMatch = countMatch + 1
+                    end
+                end
+                return #expectedUpvalues == countMatch
+            end)
+            return success and upvalues
+        end,
+        MatchConstants = function(targetFunction, expectedConstants)
+            local success, constants = pcall(function()
+                local functionConstants = getconstants(targetFunction)
+                local countMatch = 0
+                for _, expectedConstant in ipairs(expectedConstants) do
+                    if table.find(functionConstants, expectedConstant) then
+                        countMatch = countMatch + 1
+                    end
+                end
+                return #expectedConstants == countMatch
+            end)
+            return success and constants
+        end
+    },
+    ["table"] = {
+        AllKeysExist = function(targetTable, keysToCheck)
+            for key in next, keysToCheck do
+                if not targetTable[key] then
+                    return false
+                end
+            end
+            return true
+        end,
+        AllValuesExist = function(targetTable, valuesToCheck)
+            for _, value in next, targetTable do
+                if not table.find(valuesToCheck, value) then
+                    return false
+                end
+            end
+            return true
+        end,
+        AllKeyValuePairsMatch = function(targetTable, expectedPairs)
+            for key, expectedValue in next, expectedPairs do
+                if targetTable[key] ~= expectedValue then
+                    return false
+                end
+            end
+            return true
+        end,
+        AllSelectedKeysExist = function(targetTable, selectedKeys)
+            local countMatch = 0
+            for _, key in ipairs(selectedKeys) do
+                if rawget(targetTable, key) ~= nil then
+                    countMatch = countMatch + 1
+                end
+            end
+            return #selectedKeys == countMatch
+        end
+    }
+}
+
+local function filter(gcType, conditions, shouldReturnOne)
+    assert(next(conditions), "-")
+    local result = {}
+    local gcObjects = getgc(true)
+    for i = 1, #gcObjects do
+        local gcObject = gcObjects[i]
+        if typeof(gcObject) == gcType then
+            local countMatch = 0
+            local totalOptions = 0
+            for conditionType, values in next, conditions do
+                totalOptions = totalOptions + 1
+                if checks[typeof(gcObject)][conditionType](gcObject, values) then
+                    countMatch = countMatch + 1
+                end
+            end
+            if countMatch == totalOptions then
+                if shouldReturnOne then
+                    return gcObject
+                else
+                    table.insert(result, gcObject)
+                end
+            end
+        end
+    end
+    return (#result > 0 and result) or nil
+end
+
+local FireWeapon = filter("function", { MatchFunctionName = "FireWeapon" }, true)
+
+local function getFromTable(tableToSearch, key)
+    for k, v in pairs(tableToSearch) do
+        if type(v) == "table" then
+            local result = getFromTable(v, key)
+            if result ~= nil then
+                return result
+            end
+        elseif type(k) == "string" and k == key then
+            return v
+        end
+    end
+end
+
+function module:reloadWeapon()
+	local success, result = pcall(function()
+        local UpvalueFireWeapon = getupvalues(FireWeapon)[2]
+        if UpvalueFireWeapon and UpvalueFireWeapon.WeaponStats and UpvalueFireWeapon.CurrentAmmo ~= UpvalueFireWeapon.WeaponStats.MaxAmmo then
+            game:GetService("ReplicatedStorage").Remotes.WeaponHandler:FireServer(3, UpvalueFireWeapon)
+            UpvalueFireWeapon.CurrentAmmo = UpvalueFireWeapon.WeaponStats.MaxAmmo
+        end
+    end)
+end
+
+return module  
