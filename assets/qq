@@ -1,11 +1,11 @@
 local module = {}
 
-
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local AllBool = false
 
 function module:fling(TargetPlayer)
+    print(TargetPlayer)
     local Character = Player.Character
     local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
     local RootPart = Humanoid and Humanoid.RootPart
@@ -168,7 +168,6 @@ function module:fling(TargetPlayer)
         return 
     end
 end
-
 
 function module:emote(emoteName)
 	if emoteName then
