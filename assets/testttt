@@ -4,7 +4,7 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local AllBool = false
 
-function module:Fling(TargetPlayer)
+function module:fling(TargetPlayer)
     local Character = Player.Character
     local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
     local RootPart = Humanoid and Humanoid.RootPart
